@@ -1,4 +1,4 @@
-use std::{error, str::Chars};
+use std::error;
 use tui::{
     backend::Backend,
     layout::{Alignment, Constraint, Direction, Layout},
@@ -25,10 +25,10 @@ pub struct App {
     /// Current input mode
     pub input_mode: InputMode,
     /// History of recorded messages
-    pub wordles: Vec<String>,
+    pub guesses: Vec<String>,
     /// Answer
     pub wordle: String,
-
+    /// The game is running
     pub running: bool,
 }
 
@@ -37,7 +37,7 @@ impl Default for App {
         App {
             input: Input::default(),
             input_mode: InputMode::Normal,
-            wordles: Vec::new(),
+            guesses: Vec::new(),
             wordle: get_random_word(),
             running: true,
         }
@@ -68,10 +68,6 @@ impl App {
 
     /// Renders the user interface widgets.
     pub fn render<B: Backend>(&mut self, frame: &mut Frame<'_, B>) {
-        // This is where you add new widgets.
-        // See the following resources:
-        // - https://docs.rs/tui/0.16.0/tui/widgets/index.html
-        // - https://github.com/fdehau/tui-rs/tree/v0.16.0/examples
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .margin(2)
@@ -141,17 +137,13 @@ impl App {
         }
 
         let messages: Vec<ListItem> = self
-            .wordles
+            .guesses
             .iter()
             .enumerate()
             .map(|(i, m)| {
-                let is_correct = compare_arrays(&self.wordle, m.chars());
+                let is_correct = &self.wordle == m;
 
                 let content = if is_correct {
-                    // let size = frame.size();
-                    // let block = Block::default().title("Block").borders(Borders::ALL);
-                    // frame.render_widget(block, chunks[1]);
-
                     vec![Spans::from(vec![
                         Span::raw(format!("{}: ", i)),
                         Span::styled(m, Style::default().fg(Color::Green)),
@@ -160,7 +152,7 @@ impl App {
                     ])]
                 } else {
                     let mut spans = vec![Span::raw(format!("{}: ", i))];
-                    let mut word = guess_status(&self.wordle, m);
+                    let mut word = guessing_status(&self.wordle, m);
 
                     spans.append(&mut word);
 
@@ -186,7 +178,7 @@ fn get_random_word() -> String {
     unidecode("acaso")
 }
 
-fn guess_status<'a>(word: &str, guess: &str) -> Vec<Span<'a>> {
+fn guessing_status<'a>(word: &str, guess: &str) -> Vec<Span<'a>> {
     let mut word_clone = word.to_string();
     let mut list: [Span; 5] = [
         Span::raw(" "),
@@ -220,13 +212,4 @@ fn guess_status<'a>(word: &str, guess: &str) -> Vec<Span<'a>> {
     }
 
     list.to_vec()
-}
-
-// compare array of chars
-fn compare_arrays(a: &str, b: Chars) -> bool {
-    if a == b.as_str() {
-        return true;
-    }
-
-    false
 }

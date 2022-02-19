@@ -40,7 +40,7 @@ fn handle_key_events_insert(key_event: KeyEvent, app: &mut App) {
                 return;
             }
 
-            app.wordles.push(input);
+            app.guesses.push(input);
             app.input = Input::default();
         }
         Some(InputResponse::Escaped) => {
