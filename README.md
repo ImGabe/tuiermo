@@ -1,44 +1,29 @@
 <div align="center">
+  <h1>Tuiermo</h1>
 
-  # Tuiermo
-
-  <p align="center">Versão TUI do jogo termooo.</p>
+  <p align="center">Versão TUI do jogo <a href="https://term.ooo/">termooo</a>.</p>
 
   [![Forks][forks-shield]][forks-url]
   [![Stargazers][stars-shield]][stars-url]
   [![Issues][issues-shield]][issues-url]
   [![MIT License][license-shield]][license-url]
-
 </div>
-
 
 ## Ajustes e melhorias
 
 O projeto ainda está em desenvolvimento e as próximas atualizações serão voltadas nas seguintes tarefas:
 
+- [ ] Verificar se a palavra é válida
+- [ ] Finalizar o jogo ao acertar a palavra
+- [ ] Mostrar as letras que já foram utilizadas
 - [ ] Salvar progresso
 - [ ] Estatísticas do jogo
 
-## 🚀 Instalando Tuiermo
+## Estrutura do projeto
 
-Para instalar o tuiermo, siga estas etapas:
+A estrutura do projeto foi baseada no [rust tui template](https://github.com/orhun/rust-tui-template) e utiliza a lib [tui input](https://github.com/sayanarijit/tui-input).
 
-Linux e macOS:
-```
-<comando_de_instalação>
-```
-
-## ☕ Usando Tuiermo
-
-Para usar tuiermo, siga estas etapas:
-
-```
-<exemplo_de_uso>
-```
-
-Adicione comandos de execução e exemplos que você acha que os usuários acharão úteis. Fornece uma referência de opções para pontos de bônus!
-
-## 📫 Contribuindo para Tuiermo
+## Contribuindo para Tuiermo
 
 Para contribuir com tuiermo, siga estas etapas:
 

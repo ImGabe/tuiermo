@@ -1,4 +1,9 @@
-use std::error;
+use rand::Rng;
+use std::{
+    error,
+    fs::File,
+    io::{Error, Read},
+};
 use tui::{
     backend::Backend,
     layout::{Alignment, Constraint, Direction, Layout},
@@ -7,9 +12,8 @@ use tui::{
     widgets::{Block, Borders, List, ListItem, Paragraph},
     Frame,
 };
-use unidecode::unidecode;
-
 use tui_input::Input;
+use unidecode::unidecode;
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -38,24 +42,16 @@ impl Default for App {
             input: Input::default(),
             input_mode: InputMode::Normal,
             guesses: Vec::new(),
-            wordle: get_random_word(),
+            wordle: match get_random_word() {
+                Ok(word) => word,
+                Err(err) => {
+                    panic!("Não foi possível obter uma palavra aleatória: {}", err);
+                }
+            },
             running: true,
         }
     }
 }
-
-// // read file and get one random word
-
-// fn get_random_word() -> String {
-//     let mut file = File::open("words.txt").unwrap();
-//     let mut buffer = String::new();
-//     file.read_to_string(&mut buffer).unwrap();
-//     let words: Vec<&str> = buffer.split_whitespace().collect();
-//     let mut rng = rand::thread_rng();
-//     let index = rng.gen_range(0..=words.len());
-
-//     words[index].to_string()
-// }
 
 impl App {
     /// Constructs a new instance of [`App`].
@@ -117,7 +113,12 @@ impl App {
                 InputMode::Editing => Style::default().fg(Color::Yellow),
             })
             .scroll((0, scroll))
-            .block(Block::default().borders(Borders::ALL).title("Tuiermo"));
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .style(Style::default())
+                    .title("Tuiermo"),
+            );
         frame.render_widget(input, chunks[1]);
 
         match self.input_mode {
@@ -141,7 +142,8 @@ impl App {
             .iter()
             .enumerate()
             .map(|(i, m)| {
-                let is_correct = &self.wordle == m;
+                let wordle_unicode = unidecode(&self.wordle);
+                let is_correct = &wordle_unicode == m;
 
                 let content = if is_correct {
                     vec![Spans::from(vec![
@@ -152,7 +154,7 @@ impl App {
                     ])]
                 } else {
                     let mut spans = vec![Span::raw(format!("{}: ", i))];
-                    let mut word = guessing_status(&self.wordle, m);
+                    let mut word = guessing_status(&wordle_unicode, m);
 
                     spans.append(&mut word);
 
@@ -174,8 +176,20 @@ impl App {
 }
 
 // read file and get one random word
-fn get_random_word() -> String {
-    unidecode("acaso")
+
+// fn get_random_word() -> Result<String, Error> {
+//     let mut file = File::open("words.txt")?;
+//     let mut buffer = String::new();
+//     file.read_to_string(&mut buffer)?;
+//     let words: Vec<&str> = buffer.split_whitespace().collect();
+//     let mut rng = rand::thread_rng();
+//     let index = rng.gen_range(0..=words.len());
+
+//     Ok(words[index].to_string())
+// }
+
+fn get_random_word() -> Result<String, Error> {
+    Ok("áéíóú".to_string())
 }
 
 fn guessing_status<'a>(word: &str, guess: &str) -> Vec<Span<'a>> {
